@@ -3,6 +3,7 @@ package opencl
 // #include "opencl.h"
 import "C"
 import (
+	"io/ioutil"
 	"strings"
 	"unsafe"
 )
@@ -11,14 +12,19 @@ type Program struct {
 	program C.cl_program
 }
 
-func createProgramWithSource(context Context, programCode string) (Program, error) {
+func createProgramWithSource(context Context, programCodeFileName string) (Program, error) {
+	programCode, err := ioutil.ReadFile(programCodeFileName)
+	if err != nil {
+		return nil, err
+	}
+
 	cs := C.CString(programCode)
 	defer C.free(unsafe.Pointer(cs))
 
 	var errInt clError
 	program := C.clCreateProgramWithSource(
 		context.context,
-		1,
+		len(programCodeFileNames),
 		&cs,
 		nil,
 		(*C.cl_int)(&errInt),
@@ -51,7 +57,7 @@ func (p Program) Build(device Device, log *string) error {
 		return clErrorToError(errInt)
 	}
 
-	size := uint64(4096)
+	size := uint64(40960)
 	compilerLog := make([]byte, size)
 	C.clGetProgramBuildInfo(
 		p.program,

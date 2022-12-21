@@ -31,8 +31,8 @@ func (c Context) CreateCommandQueue(device Device) (CommandQueue, error) {
 	return createCommandQueue(c, device)
 }
 
-func (c Context) CreateProgramWithSource(programCode string) (Program, error) {
-	return createProgramWithSource(c, programCode)
+func (c Context) CreateProgramWithSource(programCodeFileName string) (Program, error) {
+	return createProgramWithSource(c, programCodeFileName)
 }
 
 func (c Context) CreateBuffer(memFlags []MemFlags, size uint64) (Buffer, error) {
