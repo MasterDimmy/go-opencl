@@ -1,5 +1,9 @@
 package opencl
 
+import (
+	"io/ioutil"
+)
+
 // #include "opencl.h"
 import "C"
 
@@ -31,8 +35,17 @@ func (c Context) CreateCommandQueue(device Device) (CommandQueue, error) {
 	return createCommandQueue(c, device)
 }
 
-func (c Context) CreateProgramWithSource(programCodeFileName string) (Program, error) {
-	return createProgramWithSource(c, programCodeFileName)
+func (c Context) CreateProgramFromSourceFile(programCodeFileName string) (*Program, error) {
+	programCode, err := ioutil.ReadFile(programCodeFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	return createProgramWithSource(c, string(programCode))
+}
+
+func (c Context) CreateProgramWithSource(programCode string) (*Program, error) {
+	return createProgramWithSource(c, programCode)
 }
 
 func (c Context) CreateBuffer(memFlags []MemFlags, size uint64) (Buffer, error) {

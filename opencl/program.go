@@ -3,7 +3,6 @@ package opencl
 // #include "opencl.h"
 import "C"
 import (
-	"io/ioutil"
 	"strings"
 	"unsafe"
 )
@@ -12,19 +11,14 @@ type Program struct {
 	program C.cl_program
 }
 
-func createProgramWithSource(context Context, programCodeFileName string) (*Program, error) {
-	programCode, err := ioutil.ReadFile(programCodeFileName)
-	if err != nil {
-		return nil, err
-	}
-
+func createProgramWithSource(context Context, programCode string) (*Program, error) {
 	cs := C.CString(programCode)
 	defer C.free(unsafe.Pointer(cs))
 
 	var errInt clError
 	program := C.clCreateProgramWithSource(
 		context.context,
-		len(programCodeFileNames),
+		1,
 		&cs,
 		nil,
 		(*C.cl_int)(&errInt),
