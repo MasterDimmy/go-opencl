@@ -12,7 +12,7 @@ type Program struct {
 	program C.cl_program
 }
 
-func createProgramWithSource(context Context, programCodeFileName string) (Program, error) {
+func createProgramWithSource(context Context, programCodeFileName string) (*Program, error) {
 	programCode, err := ioutil.ReadFile(programCodeFileName)
 	if err != nil {
 		return nil, err
@@ -30,10 +30,10 @@ func createProgramWithSource(context Context, programCodeFileName string) (Progr
 		(*C.cl_int)(&errInt),
 	)
 	if errInt != clSuccess {
-		return Program{}, clErrorToError(errInt)
+		return nil, clErrorToError(errInt)
 	}
 
-	return Program{program}, nil
+	return &Program{program}, nil
 }
 
 func (p Program) Build(device Device, log *string) error {
