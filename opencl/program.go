@@ -30,15 +30,15 @@ func createProgramWithSource(context Context, programCode string) (*Program, err
 	return &Program{program}, nil
 }
 
-func (p Program) Build(device Device, log *string) error {
-	emptyString := C.CString("\x00")
-	defer C.free(unsafe.Pointer(emptyString))
+func (p Program) Build(device Device, buildOptions string, log *string) error {
+	bo := C.CString(buildOptions + "\x00")
+	defer C.free(unsafe.Pointer(bo))
 
 	var errInt clError = clError(C.clBuildProgram(
 		p.program,
 		0,
 		nil,
-		emptyString,
+		bo,
 		nil,
 		nil,
 	))
