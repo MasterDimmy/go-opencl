@@ -33,6 +33,12 @@ const (
 	DeviceInfoType                     = DeviceInfo(C.CL_DEVICE_TYPE)
 	DeviceVendor                       = DeviceInfo(C.CL_DEVICE_VENDOR)
 	DriverVersion                      = DeviceInfo(C.CL_DRIVER_VERSION)
+
+	DeviceMaxMemAllocSize  = DeviceInfo(C.CL_DEVICE_MAX_MEM_ALLOC_SIZE)
+	DeviceMaxWorkGroupSize = DeviceInfo(C.CL_DEVICE_MAX_WORK_GROUP_SIZE)
+	DeviceMaxComputeUnits  = DeviceInfo(C.CL_DEVICE_MAX_COMPUTE_UNITS)
+	DeviceGlobalMemSize    = DeviceInfo(C.CL_DEVICE_GLOBAL_MEM_SIZE)
+	DeviceLocalMemSize     = DeviceInfo(C.CL_DEVICE_LOCAL_MEM_SIZE)
 )
 
 var (
@@ -44,6 +50,12 @@ var (
 		DeviceInfoType:          {DeviceTypeDefault},
 		DeviceVendor:            {""},
 		DriverVersion:           {"", MajorMinor{}},
+
+		DeviceMaxMemAllocSize:  {uint64(0)},
+		DeviceMaxWorkGroupSize: {uint64(0)},
+		DeviceMaxComputeUnits:  {uint32(0)},
+		DeviceGlobalMemSize:    {uint64(0)},
+		DeviceLocalMemSize:     {uint64(0)},
 	}
 )
 
@@ -150,7 +162,7 @@ func (d Device) GetInfo(name DeviceInfo, output interface{}) error {
 			*t = elems
 		}
 
-	case *uint32, *bool, *DeviceType:
+	case *uint32, *bool, *DeviceType, *uint64:
 		return d.getInfoNum(name, output)
 
 	case *MajorMinor:
@@ -181,6 +193,17 @@ func (d Device) getInfoNum(name DeviceInfo, output interface{}) error {
 			d.deviceID,
 			C.cl_device_info(name),
 			4,
+			unsafe.Pointer(&u),
+			nil,
+		))
+		*t = u
+
+	case *uint64:
+		var u uint64
+		errInt = clError(C.clGetDeviceInfo(
+			d.deviceID,
+			C.cl_device_info(name),
+			8,
 			unsafe.Pointer(&u),
 			nil,
 		))
