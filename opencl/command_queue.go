@@ -44,14 +44,27 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		br = C.CL_FALSE
 	}
 
-	var ptr unsafe.Pointer
 	var dataLen uint64
-	switch p := dataPtr.(type) {
+
+	var ptr unsafe.Pointer
+	switch t := dataPtr.(type) {
 	case []float32:
-		dataLen = uint64(len(p) * 4)
-		ptr = unsafe.Pointer(&p[0])
+		ptr = unsafe.Pointer(&t[0])
+		dataLen = uint64(len(t) * 4)
+	case []float64:
+		ptr = unsafe.Pointer(&t[0])
+		dataLen = uint64(len(t) * 8)
+	case []uint32:
+		ptr = unsafe.Pointer(&t[0])
+		dataLen = uint64(len(t) * 4)
+	case []uint64:
+		ptr = unsafe.Pointer(&t[0])
+		dataLen = uint64(len(t) * 8)
+	case []byte:
+		ptr = unsafe.Pointer(&t[0])
+		dataLen = uint64(len(t))
 	default:
-		return errors.New("Unexpected type for dataPtr")
+		return errors.New("data type is not supported")
 	}
 
 	errInt := clError(C.clEnqueueReadBuffer(c.commandQueue,
