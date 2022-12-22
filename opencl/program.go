@@ -70,6 +70,6 @@ func (p Program) Release() {
 	C.clReleaseProgram(p.program)
 }
 
-func (p Program) CreateKernel(kernelName string) (Kernel, error) {
+func (p Program) CreateKernel(kernelName string) (*Kernel, error) {
 	return createKernel(p, kernelName)
 }
