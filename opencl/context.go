@@ -11,9 +11,7 @@ type Context struct {
 	context C.cl_context
 }
 
-func createContext(device Device) (Context, error) {
-	var emptyContext Context
-
+func createContext(device Device) (*Context, error) {
 	// TODO add more functionality. Super simple context creation right now
 	var errInt clError
 	ctx := C.clCreateContext(
@@ -25,13 +23,13 @@ func createContext(device Device) (Context, error) {
 		(*C.cl_int)(&errInt),
 	)
 	if errInt != clSuccess {
-		return emptyContext, clErrorToError(errInt)
+		return nil, clErrorToError(errInt)
 	}
 
-	return Context{ctx}, nil
+	return &Context{ctx}, nil
 }
 
-func (c Context) CreateCommandQueue(device Device) (CommandQueue, error) {
+func (c Context) CreateCommandQueue(device Device) (*CommandQueue, error) {
 	return createCommandQueue(c, device)
 }
 

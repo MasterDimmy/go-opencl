@@ -11,7 +11,7 @@ type CommandQueue struct {
 	commandQueue C.cl_command_queue
 }
 
-func createCommandQueue(context Context, device Device) (CommandQueue, error) {
+func createCommandQueue(context Context, device Device) (*CommandQueue, error) {
 	var errInt clError
 	queue := C.clCreateCommandQueue(
 		context.context,
@@ -20,10 +20,10 @@ func createCommandQueue(context Context, device Device) (CommandQueue, error) {
 		(*C.cl_int)(&errInt),
 	)
 	if errInt != clSuccess {
-		return CommandQueue{}, clErrorToError(errInt)
+		return nil, clErrorToError(errInt)
 	}
 
-	return CommandQueue{queue}, nil
+	return &CommandQueue{queue}, nil
 }
 
 func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globalWorkSize []uint64) error {

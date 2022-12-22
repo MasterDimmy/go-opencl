@@ -106,7 +106,7 @@ func getDevices(platform Platform, deviceType DeviceType) ([]Device, error) {
 
 // CreateContext creates and returns an OpenCL context for a device. After use the
 // context must be released.
-func (d Device) CreateContext() (Context, error) {
+func (d Device) CreateContext() (*Context, error) {
 	return createContext(d)
 }
 
