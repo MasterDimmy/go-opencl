@@ -31,6 +31,14 @@ func (k Kernel) SetArg(argIndex uint32, argSize uint64, argValue interface{}) er
 	switch argValue.(type) {
 	case *Buffer:
 		argPtr = unsafe.Pointer(argValue.(*Buffer))
+	case *float32:
+		argPtr = unsafe.Pointer(argValue.(*float32))
+	case *float64:
+		argPtr = unsafe.Pointer(argValue.(*float64))
+	case *uint32:
+		argPtr = unsafe.Pointer(argValue.(*uint32))
+	case *uint64:
+		argPtr = unsafe.Pointer(argValue.(*uint64))
 	default:
 		return errors.New("Unknown type for argValue")
 	}
