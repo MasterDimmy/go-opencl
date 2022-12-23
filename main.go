@@ -23,6 +23,12 @@ kernel void kern(global float* out)
 `
 )
 
+func errpanic(err error) {
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func printHeader(name string) {
 	fmt.Println(strings.ToUpper(name))
 	for _ = range name {
@@ -96,61 +102,64 @@ func main() {
 
 	printInfo(platform, device)
 
-	var context opencl.Context
-	context, err = device.CreateContext()
-	if err != nil {
-		panic(err)
-	}
+	context, err := device.CreateContext()
+	errpanic(err)
 	defer context.Release()
 
-	var commandQueue opencl.CommandQueue
-	commandQueue, err = context.CreateCommandQueue(device)
-	if err != nil {
-		panic(err)
+	if context == nil {
+		panic("context not created")
 	}
+
+	commandQueue, err := context.CreateCommandQueue(device)
+	errpanic(err)
 	defer commandQueue.Release()
+	if commandQueue == nil {
+		panic("command queue is empty")
+	}
+
+	program, err := context.CreateProgramWithSource(programCode)
+	errpanic(err)
+	defer program.Release()
+	if program == nil {
+		panic("program is empty")
+	}
+
+	var log string
+	err = program.Build(device, "", &log)
+	errpanic(err)
+
+	kernel, err := program.CreateKernel("kern")
+	errpanic(err)
+	defer kernel.Release()
+	if kernel == nil {
+		panic("kernel is nil")
+	}
 
 	// * * * * * test commandQueue buffer read and write * * * * *
 	var someData = []uint64{12, 14}
+	var someDataSz = uint64(len(someData)) * uint64(unsafe.Sizeof(&someData[0]))
+	fmt.Printf("someDatasz: %d\n", someDataSz)
 
 	// create buffer
-	bufferTest, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemWriteOnly}, uint64(unsafe.Sizeof(someData)))
-	panic(err.Error())
+	bufferTest, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemReadWrite}, someDataSz)
+	errpanic(err)
 	defer bufferTest.Release()
 
 	// write buffer
-	err = commandQueue.EnqueueWriteBuffer(bufferTest, true, uint64(unsafe.Sizeof(someData)), unsafe.Pointer(&someData[0]))
-	panic(err.Error())
+	err = commandQueue.EnqueueWriteBuffer(bufferTest, true, someDataSz, unsafe.Pointer(&someData[0]))
+	errpanic(err)
 
 	// read written buffer
-	var retData [2]uint64
+	var retData = make([]uint64, 2)
 	err = commandQueue.EnqueueReadBuffer(bufferTest, true, retData)
-	panic(err.Error())
+	errpanic(err)
 
-	fmt.Printf("readed data: %v\n", retData)
+	fmt.Printf("read data: %v\n", retData)
 	if retData[0] != someData[0] && retData[1] != someData[1] {
 		panic("incorrect read")
 	}
 
-	var program opencl.Program
-	program, err = context.CreateProgramWithSource(programCode)
-	if err != nil {
-		panic(err)
-	}
-	defer program.Release()
-
-	var log string
-	err = program.Build(device, &log)
-	if err != nil {
-		fmt.Println(log)
-		panic(err)
-	}
-
-	kernel, err := program.CreateKernel("kern")
-	if err != nil {
-		panic(err)
-	}
-	defer kernel.Release()
+	// ******************** end test write / read buffer
 
 	buffer, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemWriteOnly}, dataSize*4)
 	if err != nil {

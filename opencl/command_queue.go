@@ -3,7 +3,7 @@ package opencl
 // #include "opencl.h"
 import "C"
 import (
-	"errors"
+	"fmt"
 	"unsafe"
 )
 
@@ -45,8 +45,8 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataP
 	}
 
 	var dataLen uint64
-
 	var ptr unsafe.Pointer
+
 	switch t := dataPtr.(type) {
 	case []float32:
 		ptr = unsafe.Pointer(&t[0])
@@ -64,7 +64,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataP
 		ptr = unsafe.Pointer(&t[0])
 		dataLen = uint64(len(t))
 	default:
-		return errors.New("data type is not supported")
+		return fmt.Errorf("data type [%T] is not supported", t)
 	}
 
 	errInt := clError(C.clEnqueueReadBuffer(c.commandQueue,
@@ -77,9 +77,9 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataP
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingRead bool, dataLen uint64, dataPtr unsafe.Pointer) error {
+func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingWrite bool, dataLen uint64, dataPtr unsafe.Pointer) error {
 	var br C.cl_bool
-	if blockingRead {
+	if blockingWrite {
 		br = C.CL_TRUE
 	} else {
 		br = C.CL_FALSE

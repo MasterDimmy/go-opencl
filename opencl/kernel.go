@@ -29,6 +29,8 @@ func createKernel(program Program, kernelName string) (*Kernel, error) {
 func (k Kernel) SetArg(argIndex uint32, argSize uint64, argValue interface{}) error {
 	var argPtr unsafe.Pointer
 	switch argValue.(type) {
+	case **Buffer:
+		argPtr = unsafe.Pointer(*(argValue.(**Buffer)))
 	case *Buffer:
 		argPtr = unsafe.Pointer(argValue.(*Buffer))
 	case *float32:

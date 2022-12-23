@@ -1,11 +1,8 @@
-module main
+module github.com/MasterDimmy/go-opencl
 
 go 1.19
 
-require (
-	github.com/MasterDimmy/go-opencl v0.0.0-20161217130610-e11c0e14990e
-	github.com/stretchr/testify v1.8.1
-)
+require github.com/stretchr/testify v1.8.1
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

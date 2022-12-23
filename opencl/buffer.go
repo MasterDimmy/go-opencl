@@ -35,7 +35,7 @@ func createBuffer(context Context, flags []MemFlags, size uint64) (*Buffer, erro
 		return nil, clErrorToError(errInt)
 	}
 
-	return &Buffer{buffer}, nil
+	return &Buffer{buffer: buffer}, nil
 }
 
 func (b *Buffer) Size() uint64 {
