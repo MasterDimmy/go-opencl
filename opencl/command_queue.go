@@ -77,6 +77,24 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataP
 	return clErrorToError(errInt)
 }
 
+func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingRead bool, dataLen uint64, dataPtr unsafe.Pointer) error {
+	var br C.cl_bool
+	if blockingRead {
+		br = C.CL_TRUE
+	} else {
+		br = C.CL_FALSE
+	}
+
+	errInt := clError(C.clEnqueueWriteBuffer(c.commandQueue,
+		buffer.buffer,
+		br,
+		0,
+		C.size_t(dataLen),
+		dataPtr,
+		0, nil, nil))
+	return clErrorToError(errInt)
+}
+
 func (c CommandQueue) Release() {
 	C.clReleaseCommandQueue(c.commandQueue)
 }

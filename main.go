@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"unsafe"
 
 	"strings"
 
@@ -108,6 +109,28 @@ func main() {
 		panic(err)
 	}
 	defer commandQueue.Release()
+
+	// * * * * * test commandQueue buffer read and write * * * * *
+	var someData = []uint64{12, 14}
+
+	// create buffer
+	bufferTest, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemWriteOnly}, uint64(unsafe.Sizeof(someData)))
+	panic(err.Error())
+	defer bufferTest.Release()
+
+	// write buffer
+	err = commandQueue.EnqueueWriteBuffer(bufferTest, true, uint64(unsafe.Sizeof(someData)), unsafe.Pointer(&someData[0]))
+	panic(err.Error())
+
+	// read written buffer
+	var retData [2]uint64
+	err = commandQueue.EnqueueReadBuffer(bufferTest, true, retData)
+	panic(err.Error())
+
+	fmt.Printf("readed data: %v\n", retData)
+	if retData[0] != someData[0] && retData[1] != someData[1] {
+		panic("incorrect read")
+	}
 
 	var program opencl.Program
 	program, err = context.CreateProgramWithSource(programCode)
