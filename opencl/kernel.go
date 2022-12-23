@@ -3,7 +3,6 @@ package opencl
 // #include "opencl.h"
 import "C"
 import (
-	"errors"
 	"fmt"
 	"unsafe"
 )
@@ -40,7 +39,7 @@ func (k Kernel) SetArg(argIndex uint32, argSize uint64, argValue interface{}) er
 	case *uint64:
 		argPtr = unsafe.Pointer(argValue.(*uint64))
 	default:
-		return errors.New("Unknown type for argValue")
+		return fmt.Errorf("Unknown type for argValue: %T", argValue)
 	}
 
 	errInt := clError(C.clSetKernelArg(

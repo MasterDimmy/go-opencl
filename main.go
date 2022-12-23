@@ -141,7 +141,7 @@ func main() {
 	fmt.Printf("someDatasz: %d\n", someDataSz)
 
 	// create buffer
-	bufferTest, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemReadWrite}, someDataSz)
+	bufferTest, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemReadWrite}, nil, someDataSz)
 	errpanic(err)
 	defer bufferTest.Release()
 
@@ -161,13 +161,31 @@ func main() {
 
 	// ******************** end test write / read buffer
 
-	buffer, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemWriteOnly}, dataSize*4)
+	// * * * * * test 2 commandQueue buffer read and write * * * * *
+	// create buffer
+	bufferTest2, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemReadWrite, opencl.MemUseHostPtr, opencl.MemCopyHostPtr}, unsafe.Pointer(&someData[0]), someDataSz)
+	errpanic(err)
+	defer bufferTest2.Release()
+
+	// read written buffer
+	var retData2 = make([]uint64, 2)
+	err = commandQueue.EnqueueReadBuffer(bufferTest2, true, retData2)
+	errpanic(err)
+
+	fmt.Printf("read data: %v\n", retData2)
+	if retData2[0] != someData[0] && retData2[1] != someData[1] {
+		panic("incorrect read")
+	}
+
+	// ******************** end test 2 write / read buffer
+
+	buffer, err := context.CreateBuffer([]opencl.MemFlags{opencl.MemWriteOnly}, nil, dataSize*4)
 	if err != nil {
 		panic(err)
 	}
 	defer buffer.Release()
 
-	err = kernel.SetArg(0, buffer.Size(), &buffer)
+	err = kernel.SetArg(0, buffer.Size(), buffer)
 	if err != nil {
 		panic(err)
 	}

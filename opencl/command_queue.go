@@ -36,7 +36,7 @@ func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globa
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPtr interface{}) error {
+func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataPtr interface{}) error {
 	var br C.cl_bool
 	if blockingRead {
 		br = C.CL_TRUE
@@ -77,7 +77,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingWrite bool, dataLen uint64, dataPtr unsafe.Pointer) error {
+func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingWrite bool, dataLen uint64, dataPtr unsafe.Pointer) error {
 	var br C.cl_bool
 	if blockingWrite {
 		br = C.CL_TRUE

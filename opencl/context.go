@@ -2,6 +2,7 @@ package opencl
 
 import (
 	"io/ioutil"
+	"unsafe"
 )
 
 // #include "opencl.h"
@@ -46,8 +47,8 @@ func (c Context) CreateProgramWithSource(programCode string) (*Program, error) {
 	return createProgramWithSource(c, programCode)
 }
 
-func (c Context) CreateBuffer(memFlags []MemFlags, size uint64) (Buffer, error) {
-	return createBuffer(c, memFlags, size)
+func (c Context) CreateBuffer(memFlags []MemFlags, hostPtr unsafe.Pointer, size uint64) (*Buffer, error) {
+	return createBuffer(c, memFlags, hostPtr, size)
 }
 
 func (c Context) Release() {
