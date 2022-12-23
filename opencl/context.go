@@ -46,7 +46,7 @@ func (c Context) CreateProgramWithSource(programCode string) (*Program, error) {
 	return createProgramWithSource(c, programCode)
 }
 
-func (c Context) CreateBuffer(memFlags []MemFlags, size uint64) (*Buffer, error) {
+func (c Context) CreateBuffer(memFlags []MemFlags, size uint64) (Buffer, error) {
 	return createBuffer(c, memFlags, size)
 }
 
