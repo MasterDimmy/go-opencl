@@ -36,7 +36,7 @@ func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globa
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataPtr interface{}) error {
+func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataLen uint64, dataPtr interface{}) error {
 	var br C.cl_bool
 	if blockingRead {
 		br = C.CL_TRUE
@@ -44,25 +44,19 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataP
 		br = C.CL_FALSE
 	}
 
-	var dataLen uint64
 	var ptr unsafe.Pointer
 
 	switch t := dataPtr.(type) {
 	case []float32:
 		ptr = unsafe.Pointer(&t[0])
-		dataLen = uint64(len(t) * 4)
 	case []float64:
 		ptr = unsafe.Pointer(&t[0])
-		dataLen = uint64(len(t) * 8)
 	case []uint32:
 		ptr = unsafe.Pointer(&t[0])
-		dataLen = uint64(len(t) * 4)
 	case []uint64:
 		ptr = unsafe.Pointer(&t[0])
-		dataLen = uint64(len(t) * 8)
 	case []byte:
 		ptr = unsafe.Pointer(&t[0])
-		dataLen = uint64(len(t))
 	default:
 		return fmt.Errorf("data type [%T] is not supported", t)
 	}

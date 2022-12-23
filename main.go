@@ -151,7 +151,7 @@ func main() {
 
 	// read written buffer
 	var retData = make([]uint64, 2)
-	err = commandQueue.EnqueueReadBuffer(bufferTest, true, retData)
+	err = commandQueue.EnqueueReadBuffer(bufferTest, true, 2*8, retData)
 	errpanic(err)
 
 	fmt.Printf("read data: %v\n", retData)
@@ -169,7 +169,7 @@ func main() {
 
 	// read written buffer
 	var retData2 = make([]uint64, 2)
-	err = commandQueue.EnqueueReadBuffer(bufferTest2, true, retData2)
+	err = commandQueue.EnqueueReadBuffer(bufferTest2, true, 2*8, retData2)
 	errpanic(err)
 
 	fmt.Printf("read data: %v\n", retData2)
@@ -200,14 +200,14 @@ func main() {
 
 	data := make([]float32, dataSize)
 
-	err = commandQueue.EnqueueReadBuffer(buffer, true, data)
+	err = commandQueue.EnqueueReadBuffer(buffer, true, 4*dataSize, data)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println()
 	printHeader("Output")
-	for _, item := range data {
+	for _, item := range data[:5] {
 		fmt.Printf("%v ", item)
 	}
 	fmt.Println()
