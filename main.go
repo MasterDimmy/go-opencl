@@ -190,7 +190,7 @@ func main() {
 		panic(err)
 	}
 
-	err = commandQueue.EnqueueNDRangeKernel(kernel, 1, []uint64{dataSize})
+	err = commandQueue.EnqueueNDRangeKernel(kernel, 1, uint64(dataSize))
 	if err != nil {
 		panic(err)
 	}

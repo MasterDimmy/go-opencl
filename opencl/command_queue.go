@@ -26,12 +26,12 @@ func createCommandQueue(context Context, device Device) (*CommandQueue, error) {
 	return &CommandQueue{queue}, nil
 }
 
-func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globalWorkSize []uint64) error {
+func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globalWorkSize uint64) error {
 	errInt := clError(C.clEnqueueNDRangeKernel(c.commandQueue,
 		kernel.kernel,
 		C.cl_uint(workDim),
 		nil,
-		(*C.size_t)(&globalWorkSize[0]),
+		(*C.size_t)(&globalWorkSize),
 		nil, 0, nil, nil))
 	return clErrorToError(errInt)
 }
