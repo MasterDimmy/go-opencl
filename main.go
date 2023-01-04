@@ -146,7 +146,7 @@ func main() {
 	defer bufferTest.Release()
 
 	// write buffer
-	err = commandQueue.EnqueueWriteBuffer(bufferTest, true, someDataSz, unsafe.Pointer(&someData[0]))
+	err = commandQueue.EnqueueWriteBuffer(bufferTest, true, 0, someDataSz, unsafe.Pointer(&someData[0]))
 	errpanic(err)
 
 	// read written buffer
