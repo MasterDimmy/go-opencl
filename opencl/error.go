@@ -113,6 +113,5 @@ func clErrorToError(clerr clError) error {
 	if ok {
 		return err
 	}
-	fmt.Println("Error", clerr)
-	return UnknownError
+	return fmt.Errorf("Unknown error: %d", clerr)
 }
