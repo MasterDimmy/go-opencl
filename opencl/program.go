@@ -11,7 +11,7 @@ type Program struct {
 	program C.cl_program
 }
 
-func createProgramWithSource(context Context, programCode string) (*Program, error) {
+func createProgramWithSource(context *Context, programCode string) (*Program, error) {
 	cs := C.CString(programCode)
 	defer C.free(unsafe.Pointer(cs))
 

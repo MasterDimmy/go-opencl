@@ -27,7 +27,7 @@ type Buffer struct {
 	buffer C.cl_mem
 }
 
-func createBuffer(context Context, flags []MemFlags, hostPtr unsafe.Pointer, size uint64) (*Buffer, error) {
+func createBuffer(context *Context, flags []MemFlags, hostPtr unsafe.Pointer, size uint64) (*Buffer, error) {
 	flagBitField := uint64(0)
 	for _, flag := range flags {
 		flagBitField |= uint64(flag)

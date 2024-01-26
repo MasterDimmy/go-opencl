@@ -11,7 +11,7 @@ type CommandQueue struct {
 	commandQueue C.cl_command_queue
 }
 
-func createCommandQueue(context Context, device Device) (*CommandQueue, error) {
+func createCommandQueue(context *Context, device Device) (*CommandQueue, error) {
 	var errInt clError
 	queue := C.clCreateCommandQueue(
 		context.context,
@@ -26,7 +26,7 @@ func createCommandQueue(context Context, device Device) (*CommandQueue, error) {
 	return &CommandQueue{queue}, nil
 }
 
-func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globalWorkSize uint64) error {
+func (c *CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globalWorkSize uint64) error {
 	errInt := clError(C.clEnqueueNDRangeKernel(c.commandQueue,
 		kernel.kernel,
 		C.cl_uint(workDim),
@@ -36,7 +36,7 @@ func (c CommandQueue) EnqueueNDRangeKernel(kernel *Kernel, workDim uint32, globa
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataLen uint64, dataPtr interface{}) error {
+func (c *CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataLen uint64, dataPtr interface{}) error {
 	var br C.cl_bool
 	if blockingRead {
 		br = C.CL_TRUE
@@ -71,7 +71,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer *Buffer, blockingRead bool, dataL
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingWrite bool, offset uint64, dataLen uint64, dataPtr unsafe.Pointer) error {
+func (c *CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingWrite bool, offset uint64, dataLen uint64, dataPtr unsafe.Pointer) error {
 	var br C.cl_bool
 	if blockingWrite {
 		br = C.CL_TRUE
@@ -89,14 +89,14 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer *Buffer, blockingWrite bool, off
 	return clErrorToError(errInt)
 }
 
-func (c CommandQueue) Release() {
+func (c *CommandQueue) Release() {
 	C.clReleaseCommandQueue(c.commandQueue)
 }
 
-func (c CommandQueue) Flush() {
+func (c *CommandQueue) Flush() {
 	C.clFlush(c.commandQueue)
 }
 
-func (c CommandQueue) Finish() {
+func (c *CommandQueue) Finish() {
 	C.clFinish(c.commandQueue)
 }

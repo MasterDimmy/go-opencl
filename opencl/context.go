@@ -30,11 +30,11 @@ func createContext(device Device) (*Context, error) {
 	return &Context{ctx}, nil
 }
 
-func (c Context) CreateCommandQueue(device Device) (*CommandQueue, error) {
+func (c *Context) CreateCommandQueue(device Device) (*CommandQueue, error) {
 	return createCommandQueue(c, device)
 }
 
-func (c Context) CreateProgramFromSourceFile(programCodeFileName string) (*Program, error) {
+func (c *Context) CreateProgramFromSourceFile(programCodeFileName string) (*Program, error) {
 	programCode, err := ioutil.ReadFile(programCodeFileName)
 	if err != nil {
 		return nil, err
@@ -43,14 +43,14 @@ func (c Context) CreateProgramFromSourceFile(programCodeFileName string) (*Progr
 	return createProgramWithSource(c, string(programCode))
 }
 
-func (c Context) CreateProgramWithSource(programCode string) (*Program, error) {
+func (c *Context) CreateProgramWithSource(programCode string) (*Program, error) {
 	return createProgramWithSource(c, programCode)
 }
 
-func (c Context) CreateBuffer(memFlags []MemFlags, hostPtr unsafe.Pointer, size uint64) (*Buffer, error) {
+func (c *Context) CreateBuffer(memFlags []MemFlags, hostPtr unsafe.Pointer, size uint64) (*Buffer, error) {
 	return createBuffer(c, memFlags, hostPtr, size)
 }
 
-func (c Context) Release() {
+func (c *Context) Release() {
 	C.clReleaseContext(c.context)
 }
